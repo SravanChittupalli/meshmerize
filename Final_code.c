@@ -1,3 +1,4 @@
+//-------------------------------------------------including header files--------------------------------------------------------
 #include <stdio.h>
 #include <time.h>
 #include <math.h>
@@ -29,6 +30,7 @@
 #include "lwip/netdb.h"
 #include "lwip/api.h"
 
+//---------------------------------------------------------variables declaration------------------------------------------------
 #define ENCODER_PHASE_A_1     22
 #define ENCODER_PHASE_B_1     23
 #define ENCODER_PHASE_A_0     18
@@ -58,10 +60,12 @@ int direction[50];
 int path = 0;
 int checkend = 0;
 int g = 0;
-
 int z = 0;
-void bot_break(mcpwm_unit_t mcpwm_num, mcpwm_timer_t timer_num , float duty_cycle1, float duty_cycle2)
-{
+
+//--------------------------------------functions declaration starts from here---------------------------------------------------
+
+void bot_break(mcpwm_unit_t mcpwm_num, mcpwm_timer_t timer_num , float duty_cycle1, float duty_cycle2)  //function to stop the bot
+{                                                                                                       //immideately
     mcpwm_set_duty(mcpwm_num, timer_num, MCPWM_OPR_A, duty_cycle1);
     mcpwm_set_duty(mcpwm_num, timer_num, MCPWM_OPR_B, duty_cycle2);
     gpio_set_level(GPIO_NUM0,1);
@@ -71,6 +75,8 @@ void bot_break(mcpwm_unit_t mcpwm_num, mcpwm_timer_t timer_num , float duty_cycl
     mcpwm_set_duty_type(mcpwm_num, timer_num, MCPWM_OPR_A, MCPWM_DUTY_MODE_0);
     mcpwm_set_duty_type(mcpwm_num, timer_num, MCPWM_OPR_B, MCPWM_DUTY_MODE_0);
 }
+
+//----------------------------------------------encoder functions---------------------------------------------------------------
 static void config_isr(int arg)
 {
     io_conf.intr_type = GPIO_PIN_INTR_POSEDGE;
@@ -141,7 +147,9 @@ static void IRAM_ATTR gpio_isr_handler_1(void* arg)
     }
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 
+//-----------------------------------------adc channels on esp-32---------------------------------------------------------------
 
 adc1_channel_t channel[6] = {ADC_CHANNEL_7, ADC_CHANNEL_6, ADC_CHANNEL_0, ADC_CHANNEL_3, ADC_CHANNEL_4,ADC_CHANNEL_5};
 adc2_channel_t channel2[4] = {ADC2_CHANNEL_4,ADC2_CHANNEL_3,ADC2_CHANNEL_0,ADC2_CHANNEL_2};
@@ -173,7 +181,7 @@ uint32_t adc_reading[6];
 float sensor_value[6];
 int adc2_reading[4];
 int sensor_value2[4];
-
+//-----------------------------------------Line Following Task-------------------------------------------------------------------
 static void read_sensors()
 {
   for(int i = 0; i < 6; i++)
@@ -259,7 +267,8 @@ static void calculate_correction()
     correction = kP*error + kI*cumulative_error + kD*difference;
     prev_error = error;
 }
-
+//----------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------maze solving functions------------------------------------------------------------
 void mazerun()
  {
     printf("hello satyam\n");
@@ -383,8 +392,8 @@ void mazerun()
     printf("\n");
   }
  }
-
-
+//--------------------------------------------------------------------------------------------------------------------------------
+//---------------------------------------------maze mapping functions------------------------------------------------------------
 void maze_solve()
 {
 if(node==0)
@@ -570,9 +579,9 @@ if(sensor_value[0]<400 && sensor_value[1]<400 && sensor_value[2]<400 && sensor_v
     }
 }
 
+//-------------------------------------------------------------------------------------------------------------------------------
 
-
-
+//---------------------------------------------------------main functions-------------------------------------------------------
 void line_follow_task(void *arg)
 {
 
@@ -627,3 +636,7 @@ void app_main()
     }
 
 }
+
+//-------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------------------------------------
